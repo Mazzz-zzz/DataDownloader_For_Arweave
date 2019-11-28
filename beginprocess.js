@@ -5,22 +5,23 @@ const peerfind = require("./getpeers.js");
 const datagrab = require("./grabdata.js");
 
 const args = process.argv;
-var timeout_ms = 5000;
+var timeout_ms = 4000;
+var delay_ms = 30;
 
-var fromblock = 1;
-var toblock = 332000;
+var firstblock = 1;
+var lastblock = 356000;
 
-if ((args[3] != 'undefined')) {
+if ((args[3] != undefined)) {
     timeout_ms = args[3];
 }
-if ((args[4] != 'undefined')) {
-    delay = args[4];
+if ((args[4] != undefined)) {
+    delay_ms = args[4];
 }
-if ((args[5] != 'undefined')) {
-    fromblock = args[5];
+if ((args[5] != undefined)) {
+    firstblock = args[5];
 }
-if ((args[6] != 'undefined')) {
-    toblock = args[6];
+if ((args[6] != undefined)) {
+    lastblock = args[6];
 }
 
 
@@ -38,7 +39,7 @@ else if (args[2] == "morepeers") {
 	peerfind.morepeers(timeout_ms);
 }
 else if (args[2] == "getdata") {
-	datagrab.maingrab(timeout_ms, delay, fromblock, toblock)
+	datagrab.maingrab(timeout_ms, delay_ms, firstblock, lastblock);
 }
 else {
 	console.log("something went wrong. Are you sure you typed your arguements in correctly?");
