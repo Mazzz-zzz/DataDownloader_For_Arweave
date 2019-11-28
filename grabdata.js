@@ -1,13 +1,14 @@
 const fs = require("fs");
 const axios = require("axios").default;
 
-exports.maingrab = main;
+module.exports.maingrab = main;
+
+timeout_ms = 5000
+
 
 var peeray = JSON.parse(fs.readFileSync("peers.json"));
 var badpeers = [];
-var firstblock = 50000;
-var lastblock = 70000;
-var errors = 0
+var errors = 0;
 
 
 function createdir(dir) {
@@ -44,6 +45,7 @@ async function handlerror(error, peernum, blocknum) {
 		}
 	}
 	catch (err){
+		console.log(err);
 		
 		badpeers.push(peernum);
 		if (peernum > -1) {
@@ -62,13 +64,15 @@ async function handlerror(error, peernum, blocknum) {
 function outputblockdata(blocknum) {
 	var peernum = getRandomInt(0,peeray.length);
 	
-	axios.get("http://" + peeray[peernum] + "/block/height/"+blocknum, {timeout: 5000})
+	axios.get("http://" + peeray[peernum] + "/block/height/"+blocknum, {timeout: timeout_ms})
 	.then((response) => {
 		writeblock(response.data);
 		writewallet(response.data , peernum);
 		writetx(response.data, peernum);
 	})
 	.catch((error) => {
+		console.log(error);
+		
 		//console.log(errorblocks.length + " retries done");
 		
 		//badpeers.push(peernum);
@@ -93,7 +97,7 @@ function writeblock(blockdata) {
 
 function writewallet(blockdata, peernum) {
 	let name = blockdata.wallet_list + ".json"
-	axios.get("http://" + peeray[peernum] + "/block/hash/" + blockdata.indep_hash + "/wallet_list",{timeout: 5000})
+	axios.get("http://" + peeray[peernum] + "/block/hash/" + blockdata.indep_hash + "/wallet_list",{timeout: timeout_ms})
 	.then((response) => {
 		fs.writeFile("wallet_lists/"+name, JSON.stringify(response.data), (err) => {
 			if (err) throw err;
@@ -116,7 +120,7 @@ function writetx(blockdata, peernum) {
 	}*/
 	for (var j = 0; j < blockdata.txs.length; j++) {
 		let name = blockdata.txs[j] + ".json";
-		axios.get("http://" + peeray[peernum] + /tx/ + blockdata.txs[j], {timeout: 5000})
+		axios.get("http://" + peeray[peernum] + /tx/ + blockdata.txs[j], {timeout: timeout_ms})
 		.then((response) => {
 			fs.writeFile("txs/" + name, JSON.stringify(response.data), (err) => {
 				if (err) throw err;
@@ -129,10 +133,14 @@ function writetx(blockdata, peernum) {
 	} 
 }
 
-async function main() {
+async function main(timeout_msf, delay, firstblock, lastblock) {
+	createdir("./blocks");
+	createdir("./txs");
+	createdir("./wallet_lists");
+	timeout_ms = timeout_msf
 	for (i = firstblock; i<=lastblock; i++) {
 		outputblockdata(i);
-		await timer(25);
+		await timer(delay);
 		if (peeray.length == 0) {
 			console.log("no peers left ---- exiting");
 			return;
@@ -140,10 +148,3 @@ async function main() {
 	};
 	console.log("Done. Waiting for all promises to resolve.")
 }
-
-const args = process.argv;
-console.log(args);
-createdir("./blocks");
-createdir("./txs");
-createdir("./wallet_lists");
-main();

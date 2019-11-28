@@ -5,12 +5,12 @@ exports.initgetpeers = initgetpeers;
 exports.morepeers = morepeers;
 
 
-function initgetpeers() {
+function initgetpeers(timeout_ms) {
 	fs.readFile('peers.json', (err, data) => {
   		if (err) throw err;
   		var peers = JSON.parse(data);
 		console.log(peers);
-		axios.get('http://arweave.net/peers').then(function (response) {
+		axios.get('http://arweave.net/peers', {timeout: timeout_ms}).then(function (response) {
 				for (i = 0; i<= response.data.length; i++) {
 				if (peers.includes(response.data[i])) {
 					continue;
@@ -27,18 +27,18 @@ function initgetpeers() {
 					});
 				};
 				};
-			}).catch(function (error) {});
+			}).catch(function (error) {console.log(error)});
 	});
 		
 
 		
 };
 
-async function morepeers() {
+async function morepeers(timeout_ms) {
 	var peeray = JSON.parse(fs.readFileSync("peers.json"));
 	for (var j = 0; j <= peeray.length; j++) {
 		console.log("run " + j + " out of " + peeray.length);
-		await axios.get("http://"+peeray[j]+"/peers", {timeout: 2000})
+		await axios.get("http://"+peeray[j]+"/peers", {timeout: timeout_ms})
 		.then((response) => {
 			for (var k = 0; k<= response.data.length; k++) {
 				if (peeray.includes(response.data[k])) {
@@ -57,6 +57,6 @@ async function morepeers() {
 	};
 	fs.writeFile("peers.json", JSON.stringify(peeray), (err) => {
 		if (err) throw err;
-		console.log("data saved!!");
+		console.log("new peerdata saved!!!");
 	});
 };
