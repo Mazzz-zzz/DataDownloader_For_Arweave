@@ -1,13 +1,21 @@
 const fs = require("fs");
 const axios = require("axios").default;
 
-
+exports.maingrab = main;
 
 var peeray = JSON.parse(fs.readFileSync("peers.json"));
 var badpeers = [];
 var firstblock = 50000;
 var lastblock = 70000;
 var errors = 0
+
+
+function createdir(dir) {
+	if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+	}
+};
+
 
 function timer(ms) {
  return new Promise(res => setTimeout(res, ms));
@@ -133,4 +141,9 @@ async function main() {
 	console.log("Done. Waiting for all promises to resolve.")
 }
 
+const args = process.argv;
+console.log(args);
+createdir("./blocks");
+createdir("./txs");
+createdir("./wallet_lists");
 main();

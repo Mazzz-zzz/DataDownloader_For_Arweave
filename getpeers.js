@@ -1,10 +1,11 @@
 const fs = require('fs');
 const axios = require('axios').default;
 
+exports.initgetpeers = initgetpeers;
+exports.morepeers = morepeers;
 
 
-
-function updatepeers() {
+function initgetpeers() {
 	fs.readFile('peers.json', (err, data) => {
   		if (err) throw err;
   		var peers = JSON.parse(data);
@@ -58,7 +59,4 @@ async function morepeers() {
 		if (err) throw err;
 		console.log("data saved!!");
 	});
-}
-
-morepeers()
-
+};
