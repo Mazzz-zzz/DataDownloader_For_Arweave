@@ -45,7 +45,6 @@ async function handlerror(error, peernum, blocknum) {
 		}
 	}
 	catch (err){
-		console.log(err);
 		
 		badpeers.push(peernum);
 		if (peernum > -1) {
@@ -71,7 +70,6 @@ function outputblockdata(blocknum) {
 		writetx(response.data, peernum);
 	})
 	.catch((error) => {
-		console.log(error);
 		
 		//console.log(errorblocks.length + " retries done");
 		
