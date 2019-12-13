@@ -1,4 +1,6 @@
 # DataDownloader_For_Aweave
+### Warning, using this tool will increase your chances of getting bad peer rankings on the network when mining -!-
+
 Downloads Blocks, txs, and wallet_lists quickly from random peers, so that mining can be started faster.
 
 ## Quickstart guide:
